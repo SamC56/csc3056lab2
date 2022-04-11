@@ -1,6 +1,5 @@
 package org.jfree.data.test;
 
-
 import org.jfree.data.Range;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -24,35 +23,139 @@ public class RangeTest extends TestCase {
 
 	@Before
 	protected void setUp() throws Exception {
-		rangeObjectUnderTest = new Range(-1, 1);
+		rangeObjectUnderTest = new Range(-5, 5);
+		
 	}
 
 	@After
 	protected void tearDown() throws Exception {
 		super.tearDown();
 	}
-
+	
+	// Tests relating to contains() method
 	@Test
-	public void testCentralValueShouldBeZero() {
-		assertEquals("The central value of -1 and 1 should be 0", 0, rangeObjectUnderTest.getCentralValue(), 0.000000001d);
+	public void testContainsValueSmallerThanLower() {
+		assertFalse("contains: Did not return expected output", rangeObjectUnderTest.contains(-10));
 	}
 	
 	@Test
-	public void testGetLength() {
-		Range r1 = new Range(2,2);
-		assertEquals("getLength: Did not return the expected output", 0.0, r1.getLength());
-		
-		Range r2 = new Range(4,9);
-		assertEquals("getLength: Did not return the expected output", 5.0, r2.getLength());
-		
-		Range r3 = new Range(-99,-99);
-		assertEquals("getLength: Did not return the expected output", 0.0, r3.getLength());
-		
-		Range r4 = new Range(-11,-4);
-		assertEquals("getLength: Did not return the expected output", 7.0, r4.getLength());
-		
-		Range r5 = new Range(-5,3);
-		assertEquals("getLength: Did not return the expected output", 8.0, r5.getLength());
+	public void testContainsValueLargerThanUpper() {
+		assertFalse("contains: Did not return expected output", rangeObjectUnderTest.contains(10));
 	}
 
+	@Test
+	public void testContainsValueEqualToLower() {
+		assertTrue("contains: Did not return expected output", rangeObjectUnderTest.contains(-5));
+	}
+	
+	@Test
+	public void testContainsValueEqualToUpper() {
+		assertTrue("contains: Did not return expected output", rangeObjectUnderTest.contains(5));
+	}
+	
+	@Test
+	public void testContainsValueInRange() {
+		assertTrue("contains: Did not return expected output", rangeObjectUnderTest.contains(1));
+	}
+	
+	// Tests relating to getLowerBound() method
+	@Test
+	public void testLowerEqualToUpper() {
+		Range tempRange = new Range(5, 5);
+		assertEquals("getLowerBound: Did not return the expected output", 5.0, tempRange.getLowerBound());
+	}
+	
+	@Test
+	public void testLowerAsNegative() {
+		Range tempRange = new Range(-5, 100);
+		assertEquals("getLowerBound: Did not return the expected output", -5.0, tempRange.getLowerBound());
+	}
+	
+	@Test
+	public void testLowerAsPositive() {
+		Range tempRange = new Range(10, 200);
+		assertEquals("getLowerBound: Did not return the expected output", 10.0, tempRange.getLowerBound());
+	}
+	
+	// Tests relating to intersects() method
+	@Test
+	public void testIntersectsGivenLowerGreaterThanRangeUpper() {
+		assertFalse("intersects: Did not return the expected output", rangeObjectUnderTest.intersects(7, 10));
+	}
+	
+	@Test
+	public void testIntersectsGivenUpperSmallerThanRangeLower() {
+		assertFalse("intersects: Did not return the expected output", rangeObjectUnderTest.intersects(-10, -7));
+	}
+	
+	@Test
+	public void testIntersectsOnlyGivenUpperInsideRange() {
+		assertTrue("intersects: Did not return the expected output", rangeObjectUnderTest.intersects(-10, -2));
+	}
+	
+	@Test
+	public void testIntersectsOnlyGivenLowerInsideRange() {
+		assertTrue("intersects: Did not return the expected output", rangeObjectUnderTest.intersects(2, 10));
+	}
+	
+	@Test
+	public void testIntersectsBothGivenInsideRange() {
+		assertTrue("intersects: Did not return the expected output", rangeObjectUnderTest.intersects(-3, 3));
+	}
+	
+	@Test
+	public void testIntersectsGivenLowerGreaterThanGivenUpper() {
+		assertFalse("intersects: Did not return the expected output", rangeObjectUnderTest.intersects(3, 1));
+	}
+	
+	// Tests relating to constrain() method
+	@Test
+	public void testConstrainValueGreaterThanUpperBound() {
+		assertEquals("constrain: Did not return expected output", 5.0, rangeObjectUnderTest.constrain(7));
+	}
+	
+	@Test
+	public void testConstrainValueSmallerThanLowerBound() {
+		assertEquals("constrain: Did not return expected output", -5.0, rangeObjectUnderTest.constrain(-10));
+	}
+	
+	@Test
+	public void testConstrainValueEqualToUpperBound() {
+		assertEquals("constrain: Did not return expected output", 5.0, rangeObjectUnderTest.constrain(5));
+	}
+	
+	@Test
+	public void testConstrainValueEqualToLowerBound() {
+		assertEquals("constrain: Did not return expected output", -5.0, rangeObjectUnderTest.constrain(-5));
+	}
+	
+	@Test
+	public void testConstrainValueInsideRange() {
+		assertEquals("constrain: Did not return expected output", 1.0, rangeObjectUnderTest.constrain(1));
+	}
+	
+	// Tests relating to getCentralValue() method
+	@Test
+	public void testCentralBothBoundsEqual() {
+		Range tempRange = new Range(5, 5);
+		assertEquals("getCentralValue: Did not return expected output", 5.0, tempRange.getCentralValue());
+	}
+	
+	@Test
+	public void testCentralPositiveUpperNegativeLower() {
+		Range tempRange = new Range(-5, 5);
+		assertEquals("getCentralValue: Did not return expected output", 0.0, tempRange.getCentralValue());
+	}
+	
+	@Test
+	public void testCentralBothBoundsPositive() {
+		Range tempRange = new Range(1, 10);
+		assertEquals("getCentralValue: Did not return expected output", 5.5, tempRange.getCentralValue());
+	}
+	
+	@Test
+	public void testCentralBothBoundsNegative() {
+		Range tempRange = new Range(-15, -5);
+		assertEquals("getCentralValue: Did not return expected output", -10.0, tempRange.getCentralValue());
+	}
 }
